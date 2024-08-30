@@ -4,6 +4,10 @@ const { Pool } = require('pg');
 const app = express();
 app.use(express.json());
 
+const cors = require('cors');
+app.use(cors());
+
+
 const pool = new Pool({
   user: 'postgres',
   host: 'localhost',
@@ -24,13 +28,23 @@ app.get('/sports', async (req, res) => {
 
 // To show all players from Table
 app.get('/players', async (req, res) => {
+  const { sport_id } = req.query;
   try {
-    const players = await pool.query('SELECT * FROM players ORDER BY id');
+    let query = 'SELECT * FROM players ORDER BY id';
+    const values = [];
+
+    if (sport_id) {
+      query = 'SELECT * FROM players WHERE sport_id = $1 ORDER BY id';
+      values.push(sport_id);
+    }
+
+    const players = await pool.query(query, values);
     res.json(players.rows);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
+
 
 // Adding a new Player
 app.post('/players', async (req, res) => {
@@ -201,7 +215,7 @@ app.post('/cricket/stats', async (req, res) => {
   const { player_id, year, matches, runs, batting_average, strike_rate, centuries, fifties, bowling_average, economy, five_wickets, best_bowling } = req.body;
   try {
     const result = await pool.query(
-      `INSERT INTO cricket_stats (id, player_id, year, matches, runs, batting_average, strike_rate, centuries, fifties, bowling_average, economy, five_wickets, best_bowling)
+      `INSERT INTO cricket_stats (player_id, year, matches, runs, batting_average, strike_rate, centuries, fifties, bowling_average, economy, five_wickets, best_bowling)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12 ) RETURNING *`,
       [player_id, year, matches, runs, batting_average, strike_rate, centuries, fifties, bowling_average, economy, five_wickets, best_bowling]
     );
@@ -326,6 +340,6 @@ app.delete('/basketball/stats/:player_id/:year', async (req, res) => {
 });
 
 //To Start the server
-app.listen(3000, () => {
-  console.log('Server running on port 3000');
+app.listen(5000, () => {
+  console.log('Server running on port 5000');
 });
