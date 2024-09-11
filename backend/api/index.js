@@ -29,8 +29,11 @@ app.get('/sports', async (req, res) => {
 // To show all players from Table
 app.get('/players', async (req, res) => {
   const { sport_id } = req.query;
+
   try {
     let query = 'SELECT * FROM players ORDER BY id';
+    let query_agg;
+    let player_aggs;
     const values = [];
 
     if (sport_id) {
@@ -39,11 +42,90 @@ app.get('/players', async (req, res) => {
     }
 
     const players = await pool.query(query, values);
-    res.json(players.rows);
+    if(sport_id == 1){
+        query_agg = `
+            SELECT player_id , SUM(runs) AS total
+            FROM cricket_stats 
+            GROUP BY player_id
+            `;
+    }else if(sport_id == 2){
+        query_agg = `
+            SELECT player_id , SUM(goals) AS total
+            FROM football_stats 
+            GROUP BY player_id
+              `;
+    }else if(sport_id == 3){
+        query_agg = `
+              SELECT player_id , SUM(matches) AS total
+              FROM basketball_stats 
+              GROUP BY player_id
+              `;
+    }
+    if(query_agg == null){
+      res.status(500).json({ error: 'No Sports Selected'});
+      return;
+    }
+    player_aggs = await pool.query(query_agg);
+    const playerData = players.rows.map(player => {
+      const agg = player_aggs.rows.find(a => a.player_id === player.id);
+      return {
+        ...player,
+        total: agg ? agg.total : 0
+      };
+    });
+    
+    res.json(playerData);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
+
+// Fetch the Topper of each sport
+app.get('/topper/:sport', async (req, res) => {
+  const sport = req.params.sport;
+  try {
+    let query;
+  
+    if (sport === 'cricket') {
+      query = `
+        SELECT p.name AS player_name, SUM(cs.runs) AS total_runs
+        FROM cricket_stats cs
+        JOIN players p ON cs.player_id = p.id
+        GROUP BY p.name
+        ORDER BY total_runs DESC
+        LIMIT 1
+      `;
+    } else if (sport === 'football') {
+      query = `
+        SELECT p.name AS player_name, SUM(fs.goals) AS total_goals
+        FROM football_stats fs
+        JOIN players p ON fs.player_id = p.id
+        GROUP BY p.name
+        ORDER BY total_goals DESC
+        LIMIT 1
+      `;
+    } else if (sport === 'basketball') {
+      query = `
+        SELECT p.name AS player_name, SUM(bs.matches) AS total_matches
+        FROM basketball_stats bs
+        JOIN players p ON bs.player_id = p.id
+        GROUP BY p.name
+        ORDER BY total_matches DESC
+        LIMIT 1
+      `;
+    } else {
+      return res.status(400).json({ error: 'Invalid sport' });
+    }
+
+    const result = await pool.query(query);
+    const topPlayer = result.rows[0];
+
+    res.json(topPlayer);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 
 
 // Adding a new Player
