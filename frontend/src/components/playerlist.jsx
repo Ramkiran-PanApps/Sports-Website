@@ -1,12 +1,16 @@
 import React from 'react';
 import axios from 'axios';
+import { List, Button, Typography, Card } from 'antd';
+import 'antd';
 
-function PlayersList({ players, onPlayerSelect }) {
+const { Text } = Typography;
+
+function PlayersList({ players, onPlayerSelect, sport, onDelete }) {
   const handleDelete = async (playerId) => {
     try {
       await axios.delete(`http://localhost:5000/players/${playerId}`);
       alert('Player deleted successfully');
-      window.location.reload(); // Refresh the page to update the players list
+      onDelete(playerId);
     } catch (error) {
       console.error('Error deleting player:', error);
       alert('Failed to delete player');
@@ -14,21 +18,39 @@ function PlayersList({ players, onPlayerSelect }) {
   };
 
   return (
-    <div>
+    
+    <div className="player-list compact">
       <h2>Select a Player</h2>
-      <ul>
-        {players.map((player) => (
-          <li key={player.id}>
-            <span onClick={() => onPlayerSelect(player)}>
-              {player.name} - {player.country} - {player.age} - {player.active ? 'Active' : 'Inactive'}
-            </span>
-            <button onClick={() => handleDelete(player.id)} style={{ marginLeft: '10px' }}>
-              Delete
-            </button>
-          </li>
-        ))}
-      </ul>
+      <Card className="players-card">
+        <List
+          bordered
+          dataSource={players}
+          renderItem={(player) => (
+            <List.Item
+              actions={[
+                <Button
+                  type="primary"
+                  danger
+                  onClick={() => handleDelete(player.id)}
+                  size="small"
+                >
+                  Delete
+                </Button>,
+              ]}
+            >
+              <Text
+                onClick={() => onPlayerSelect(player)}
+                style={{ cursor: 'pointer', fontSize: 16 }}
+              >
+                {player.name} - {player.country} - {player.age} -{' '}
+                {player.active ? 'Active' : 'Inactive'} - {sport === 'cricket' ? `${player.total} runs` : sport === 'football' ? `${player.total} goals` : `${player.total} matches`}
+              </Text>
+            </List.Item>
+          )}
+        />
+      </Card>
     </div>
+    
   );
 }
 

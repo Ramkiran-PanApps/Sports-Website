@@ -1,56 +1,53 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { List, Card, Row, Col, Input, Button, Descriptions } from 'antd';
 
 function PlayerStats({ player, sport }) {
   const [overallStats, setOverallStats] = useState({});
   const [year, setYear] = useState('');
   const [yearlyStats, setYearlyStats] = useState([]);
-  const [hasStats, setHasStats] = useState(true);
-  const [error, setError] = useState('');
+  const [overallError, setOverallError] = useState(''); 
+  const [yearlyError, setYearlyError] = useState(''); 
 
   useEffect(() => {
+    
     setOverallStats({});
-    setYearlyStats([]);
-    setYear('');
-    setHasStats(true);
-    setError('');
-
-    if (player && sport && !year) {
+    setOverallError('');
+    
+    if (player && sport) {
       axios.get(`http://localhost:5000/${sport}/stats/${player.id}`)
         .then((response) => {
           if (response.status === 200 && response.data) {
             setOverallStats(response.data);
-            setHasStats(Object.keys(response.data).length > 0);
           } else {
-            setHasStats(false);
+            setOverallError('No overall stats available for this player.');
           }
         })
         .catch((error) => {
-          setHasStats(false);
-          setError('Error fetching overall stats');
+          setOverallError('Error fetching overall stats');
           console.error('Error fetching overall stats:', error);
         });
     }
   }, [player, sport]);
 
   const handleYearChange = (e) => {
-    setYear(e.target.value);
+    const yearValue = e.target.value;
+    setYear(yearValue);
+    setYearlyError(''); 
 
-    if (player && sport) {
-      axios.get(`http://localhost:5000/${sport}/stats/${player.id}/year?year=${e.target.value}`)
+    if (player && sport && yearValue) {
+      axios.get(`http://localhost:5000/${sport}/stats/${player.id}/year?year=${yearValue}`)
         .then((response) => {
           if (response.status === 200 && response.data) {
             setYearlyStats(response.data);
-            setHasStats(response.data.length > 0);
           } else {
             setYearlyStats([]);
-            setHasStats(false);
+            setYearlyError('No stats available for this year');
           }
         })
         .catch((error) => {
           setYearlyStats([]);
-          setHasStats(false);
-          setError('Error fetching yearly stats');
+          setYearlyError('Error fetching yearly stats');
           console.error('Error fetching yearly stats:', error);
         });
     }
@@ -60,102 +57,92 @@ function PlayerStats({ player, sport }) {
     try {
       await axios.delete(`http://localhost:5000/${sport}/stats/${player.id}/${year}`);
       alert(`Stats for the year ${year} deleted successfully`);
-      setYearlyStats([]); // Clear the yearly stats after deletion
+      setYearlyStats([]); 
     } catch (error) {
       console.error('Error deleting yearly stats:', error);
       alert('Failed to delete yearly stats');
     }
   };
 
-  const renderStats = () => {
-    if (error) {
-      return <p>{error}</p>;
+  const renderOverallStats = () => {
+    if (overallError) {
+      return <p>{overallError}</p>;
     }
 
-    if (!hasStats) {
-      return <p>No stats available for this player.</p>;
-    }
-
-    if (sport === 'cricket') {
-      return (
-        <>
-          <p>Total Matches: {overallStats.total_matches}</p>
-          <p>Total Runs: {overallStats.total_runs}</p>
-          <p>Batting Average: {overallStats.batting_average}</p>
-          <p>Strike Rate: {overallStats.strike_rate}</p>
-          <p>Centuries: {overallStats.centuries}</p>
-          <p>Fifties: {overallStats.fifties}</p>
-          <p>Bowling Average: {overallStats.bowling_average}</p>
-          <p>Economy: {overallStats.economy}</p>
-          <p>Five-Wicket Hauls: {overallStats.five_wickets}</p>
-          <p>Best Bowling: {overallStats.best_bowling}</p>
-        </>
-      );
-    } else if (sport === 'football') {
-      return (
-        <>
-          <p>Total Matches: {overallStats.matches}</p>
-          <p>Total Goals: {overallStats.goals}</p>
-          <p>Total Assists: {overallStats.assists}</p>
-          <p>Team Trophies: {overallStats.team_trophies}</p>
-          <p>Individual Trophies: {overallStats.individual_trophies}</p>
-        </>
-      );
-    } else if (sport === 'basketball') {
-      return (
-        <>
-          <p>Total Matches: {overallStats.total_matches}</p>
-          <p>Average Points: {overallStats.points}</p>
-          <p>Average Rebounds: {overallStats.rebounds}</p>
-          <p>Average Assists: {overallStats.assists}</p>
-          <p>Average Efficiency: {overallStats.efficiency}</p>
-          <p>Average Turnovers: {overallStats.turnovers}</p>
-        </>
-      );
-    } else {
-      return <p>No stats available for this sport.</p>;
-    }
-  };
-
-  const renderYearlyStats = () => {
-    if (yearlyStats.length === 0) {
-      return <p>No stats available for this year.</p>;
+    if (!Object.keys(overallStats).length) {
+      return <p>No overall stats available for this player.</p>;
     }
 
     return (
-      <div>
-        <ul>
-          {yearlyStats.map((stat, index) => (
-            <li key={index}>
-              <ul>
+      <Descriptions bordered column={2} title={`${sport.toUpperCase()} Overall Stats`} layout="vertical">
+        {Object.entries(overallStats).map(([key, value]) => (
+          <Descriptions.Item label={key.replace(/_/g, ' ').toUpperCase()} key={key}>
+            {value}
+          </Descriptions.Item>
+        ))}
+      </Descriptions>
+    );
+  };
+
+  const renderYearlyStats = () => {
+    if (yearlyError) {
+      return <p>{yearlyError}</p>;
+    }
+  
+    if (!yearlyStats.length) {
+      return <p>No stats available for this year.</p>;
+    }
+  
+    return (
+      <Card title={`Yearly Stats for ${year}`} bordered={false} style={{ marginTop: '20px', boxShadow: '0 4px 8px rgba(0,0,0,0.1)' }}>
+        <List
+          bordered
+          dataSource={yearlyStats}
+          renderItem={(stat, index) => (
+            <List.Item>
+              <ul style={{ padding: 0, margin: 0, listStyleType: 'none' }}>
                 {Object.entries(stat)
                   .filter(([key]) => key !== 'id' && key !== 'player_id')
                   .map(([key, value]) => (
-                    <li key={key}>
+                    <li key={key} style={{ marginBottom: '8px' }}>
                       <strong>{key.replace(/_/g, ' ').toUpperCase()}:</strong> {value}
                     </li>
                   ))}
               </ul>
-            </li>
-          ))}
-        </ul>
-        <button onClick={handleDeleteYearlyStats}>Delete {year} stats</button>
-      </div>
+            </List.Item>
+          )}
+        />
+        <Button type="danger" onClick={handleDeleteYearlyStats} style={{ marginTop: '10px' }}>
+          Delete {year} stats
+        </Button>
+      </Card>
     );
   };
+  
 
   return (
-    <div>
+    <div className="player-stats">
       <h2>{player.name} Stats</h2>
 
-      <h3>Yearly Stats</h3>
-      <input
-        type="number"
-        value={year}
-        onChange={handleYearChange}
-        placeholder="Enter Year"
-      />
-      {year ? renderYearlyStats() : renderStats()}
+      <Row gutter={16}>
+        <Col span={12}>
+          <Card title="Overall Stats" bordered={false}>
+            {renderOverallStats()}
+          </Card>
+        </Col>
+        <Col span={12}>
+          <Card title="Yearly Stats" bordered={false}>
+            <Input
+              type="number"
+              value={year}
+              onChange={handleYearChange}
+              placeholder="Enter Year"
+              style={{ marginBottom: '10px' }}
+            />
+            {year ? renderYearlyStats() : <p>Please enter a year to see stats.</p>}
+          </Card>
+        </Col>
+      </Row>
     </div>
   );
 }

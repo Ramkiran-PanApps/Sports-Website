@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { Form, Input, Button, Checkbox, Typography } from 'antd';
+
+const { Title } = Typography;
 
 function AddPlayerForm({ selectedSport }) {
   const [name, setName] = useState('');
@@ -22,16 +25,13 @@ function AddPlayerForm({ selectedSport }) {
     fetchSports();
   }, []);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
+  const handleSubmit = async (values) => {
     try {
       await axios.post('http://localhost:5000/players', {
-        name,
-        country,
-        age: parseInt(age),  // Convert age to integer
+        ...values,
+        age: parseInt(values.age), // Convert age to integer
         sport_id: selectedSport,
-        active,
+        active: values.active,
       });
       alert('Player added successfully');
       setName('');
@@ -45,56 +45,43 @@ function AddPlayerForm({ selectedSport }) {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h3>Add Player</h3>
-      <div>
-        <label>
-          Player Name:
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Player Name"
-            required
-          />
-        </label>
-      </div>
-      <div>
-        <label>
-          Country:
-          <input
-            type="text"
-            value={country}
-            onChange={(e) => setCountry(e.target.value)}
-            placeholder="Country"
-            required
-          />
-        </label>
-      </div>
-      <div>
-        <label>
-          Age:
-          <input
-            type="number"
-            value={age}
-            onChange={(e) => setAge(e.target.value)}
-            placeholder="Age"
-            required
-          />
-        </label>
-      </div>
-      <div>
-        <label>
-          Active:
-          <input
-            type="checkbox"
-            checked={active}
-            onChange={(e) => setActive(e.target.checked)}
-          />
-        </label>
-      </div>
-      <button type="submit">Add Player</button>
-    </form>
+    <Form
+      name="add_player"
+      onFinish={handleSubmit}
+      layout="vertical"
+      style={{ maxWidth: '500px', margin: 'auto' }}
+    >
+      <Title level={3}>Add Player</Title>
+      <Form.Item
+        label="Player Name"
+        name="name"
+        rules={[{ required: true, message: 'Please enter the player name' }]}
+      >
+        <Input placeholder="Player Name" />
+      </Form.Item>
+      <Form.Item
+        label="Country"
+        name="country"
+        rules={[{ required: true, message: 'Please enter the country' }]}
+      >
+        <Input placeholder="Country" />
+      </Form.Item>
+      <Form.Item
+        label="Age"
+        name="age"
+        rules={[{ required: true, message: 'Please enter the age' }]}
+      >
+        <Input type="number" placeholder="Age" />
+      </Form.Item>
+      <Form.Item name="active" valuePropName="checked">
+        <Checkbox>Active</Checkbox>
+      </Form.Item>
+      <Form.Item>
+        <Button type="primary" htmlType="submit" block>
+          Add Player
+        </Button>
+      </Form.Item>
+    </Form>
   );
 }
 

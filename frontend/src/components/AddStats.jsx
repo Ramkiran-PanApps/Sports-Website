@@ -1,271 +1,188 @@
-import React, { useState } from 'react';
+import React from 'react';
 import axios from 'axios';
+import { Form, Input, Button, Typography, notification } from 'antd';
+
+const { Title } = Typography;
 
 const AddStats = ({ player, sport }) => {
-  const [year, setYear] = useState('');
-  const [matches, setMatches] = useState('');
-  const [runs, setRuns] = useState('');
-  const [battingAverage, setBattingAverage] = useState('');
-  const [strikeRate, setStrikeRate] = useState('');
-  const [centuries, setCenturies] = useState('');
-  const [fifties, setFifties] = useState('');
-  const [bowlingAverage, setBowlingAverage] = useState('');
-  const [economy, setEconomy] = useState('');
-  const [fiveWickets, setFiveWickets] = useState('');
-  const [bestBowling, setBestBowling] = useState('');
-  const [goals, setGoals] = useState('');
-  const [assists, setAssists] = useState('');
-  const [teamTrophies, setTeamTrophies] = useState('');
-  const [individualTrophies, setIndividualTrophies] = useState('');
-  const [points, setPoints] = useState('');
-  const [rebounds, setRebounds] = useState('');
-  const [assistsBasketball,setAssistsBasketball] = useState('')
-  const [efficiency, setEfficiency] = useState('');
-  const [turnovers, setTurnovers] = useState('');
+  const [form] = Form.useForm();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const checkIfStatsExist = async (player_id, year) => {
+    try {
+      let response;
+      if (sport === 'cricket') {
+        response = await axios.get(`http://localhost:5000/cricket/stats/${player_id}/year`, {
+          params: { year }
+        });
+      } else if (sport === 'football') {
+        response = await axios.get(`http://localhost:5000/football/stats/${player_id}/year`, {
+          params: { year }
+        });
+      } else if (sport === 'basketball') {
+        response = await axios.get(`http://localhost:5000/basketball/stats/${player_id}/year`, {
+          params: { year }
+        });
+      }
+
+      return response.data.length > 0;
+    } catch (error) {
+      console.error('Error checking stats existence:', error);
+      return false;
+    }
+  };
+
+  const handleSubmit = async (values) => {
+    const { year } = values;
+    const statsExist = await checkIfStatsExist(player.id, year);
+
+    if (statsExist) {
+      notification.error({
+        message: 'Error',
+        description: `Stats for the year ${year} already exist for this player.`,
+      });
+      return;
+    }
 
     const statsData = {
       player_id: player.id,
-      year,
-      matches,
+      ...values,
       ...(sport === 'cricket' && {
-        runs,
-        batting_average: battingAverage,
-        strike_rate: strikeRate,
-        centuries,
-        fifties,
-        bowling_average: bowlingAverage,
-        economy,
-        five_wickets: fiveWickets,
-        best_bowling: bestBowling,
+        runs: values.runs,
+        batting_average: values.battingAverage,
+        strike_rate: values.strikeRate,
+        centuries: values.centuries,
+        fifties: values.fifties,
+        bowling_average: values.bowlingAverage,
+        economy: values.economy,
+        five_wickets: values.fiveWickets,
+        best_bowling: values.bestBowling,
       }),
       ...(sport === 'football' && {
-        goals,
-        assists,
-        team_trophies: teamTrophies,
-        individual_trophies: individualTrophies,
+        goals: values.goals,
+        assists: values.assists,
+        team_trophies: values.teamTrophies,
+        individual_trophies: values.individualTrophies,
       }),
       ...(sport === 'basketball' && {
-        points,
-        rebounds,
-        assists : assistsBasketball,
-        efficiency,
-        turnovers,
+        points: values.points,
+        rebounds: values.rebounds,
+        assists: values.assistsBasketball,
+        efficiency: values.efficiency,
+        turnovers: values.turnovers,
       }),
     };
-    
-  console.log('Submitting stats data:', statsData);
-
 
     try {
       await axios.post(`http://localhost:5000/${sport}/stats`, statsData);
-      console.log('Stats added successfully');
-      alert(`Stats for the year ${year} added successfully`);
-
+      notification.success({
+        message: 'Success',
+        description: `Stats for the year ${values.year} added successfully`,
+      });
+      form.resetFields(); // Clear form fields after successful submission
     } catch (error) {
       console.error('Error adding stats:', error);
-      if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        console.error('Response data:', error.response.data);
-        console.error('Response status:', error.response.status);
-        console.error('Response headers:', error.response.headers);
-      } else if (error.request) {
-        // The request was made but no response was received
-        console.error('Request data:', error.request);
-      } else {
-        // Something happened in setting up the request that triggered an Error
-        console.error('Error message:', error.message);
-      }
+      notification.error({
+        message: 'Error',
+        description: 'There was an error adding the stats.',
+      });
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>Add Stats</h2>
-      <input
-        id="year"
+    <Form
+      form={form}
+      name="add_stats"
+      onFinish={handleSubmit}
+      layout="vertical"
+      style={{ maxWidth: '500px', margin: 'auto' }}
+    >
+      <Title level={2}>Add Stats</Title>
+      <Form.Item
+        label="Year"
         name="year"
-        type="text"
-        value={year}
-        onChange={(e) => setYear(e.target.value)}
-        placeholder="Year"
-        required
-      />
-      <input
-        id="matches"
+        rules={[{ required: true, message: 'Please enter the year' }]}
+      >
+        <Input placeholder="Year" />
+      </Form.Item>
+      <Form.Item
+        label="Matches"
         name="matches"
-        type="number"
-        value={matches}
-        onChange={(e) => setMatches(e.target.value)}
-        placeholder="Matches"
-        required
-      />
+        rules={[{ required: true, message: 'Please enter the number of matches' }]}
+      >
+        <Input type="number" placeholder="Matches" />
+      </Form.Item>
       {sport === 'cricket' && (
         <>
-          <input
-            id="runs"
-            name="runs"
-            type="number"
-            value={runs}
-            onChange={(e) => setRuns(e.target.value)}
-            placeholder="Runs"
-          />
-          <input
-            id="battingAverage"
-            name="battingAverage"
-            type="number"
-            step="0.01"
-            value={battingAverage}
-            onChange={(e) => setBattingAverage(e.target.value)}
-            placeholder="Batting Average"
-          />
-          <input
-            id="strikeRate"
-            name="strikeRate"
-            type="number"
-            step="0.01"
-            value={strikeRate}
-            onChange={(e) => setStrikeRate(e.target.value)}
-            placeholder="Strike Rate"
-          />
-          <input
-            id="centuries"
-            name="centuries"
-            type="number"
-            value={centuries}
-            onChange={(e) => setCenturies(e.target.value)}
-            placeholder="Centuries"
-          />
-          <input
-            id="fifties"
-            name="fifties"
-            type="number"
-            value={fifties}
-            onChange={(e) => setFifties(e.target.value)}
-            placeholder="Fifties"
-          />
-          <input
-            id="bowlingAverage"
-            name="bowlingAverage"
-            type="number"
-            step="0.01"
-            value={bowlingAverage}
-            onChange={(e) => setBowlingAverage(e.target.value)}
-            placeholder="Bowling Average"
-          />
-          <input
-            id="economy"
-            name="economy"
-            type="number"
-            step="0.01"
-            value={economy}
-            onChange={(e) => setEconomy(e.target.value)}
-            placeholder="Economy"
-          />
-          <input
-            id="fiveWickets"
-            name="fiveWickets"
-            type="number"
-            value={fiveWickets}
-            onChange={(e) => setFiveWickets(e.target.value)}
-            placeholder="Five Wickets"
-          />
-          <input
-            id="bestBowling"
-            name="bestBowling"
-            type="text"
-            value={bestBowling}
-            onChange={(e) => setBestBowling(e.target.value)}
-            placeholder="Best Bowling"
-          />
+          <Form.Item label="Runs" name="runs">
+            <Input type="number" placeholder="Runs" />
+          </Form.Item>
+          <Form.Item label="Batting Average" name="battingAverage">
+            <Input type="number" step="0.01" placeholder="Batting Average" />
+          </Form.Item>
+          <Form.Item label="Strike Rate" name="strikeRate">
+            <Input type="number" step="0.01" placeholder="Strike Rate" />
+          </Form.Item>
+          <Form.Item label="Centuries" name="centuries">
+            <Input type="number" placeholder="Centuries" />
+          </Form.Item>
+          <Form.Item label="Fifties" name="fifties">
+            <Input type="number" placeholder="Fifties" />
+          </Form.Item>
+          <Form.Item label="Bowling Average" name="bowlingAverage">
+            <Input type="number" step="0.01" placeholder="Bowling Average" />
+          </Form.Item>
+          <Form.Item label="Economy" name="economy">
+            <Input type="number" step="0.01" placeholder="Economy" />
+          </Form.Item>
+          <Form.Item label="Five Wickets" name="fiveWickets">
+            <Input type="number" placeholder="Five Wickets" />
+          </Form.Item>
+          <Form.Item label="Best Bowling" name="bestBowling">
+            <Input placeholder="Best Bowling" />
+          </Form.Item>
         </>
       )}
       {sport === 'football' && (
         <>
-          <input
-            id="goals"
-            name="goals"
-            type="number"
-            value={goals}
-            onChange={(e) => setGoals(e.target.value)}
-            placeholder="Goals"
-          />
-          <input
-            id="assists"
-            name="assists"
-            type="number"
-            value={assists}
-            onChange={(e) => setAssists(e.target.value)}
-            placeholder="Assists"
-          />
-          <input
-            id="teamTrophies"
-            name="teamTrophies"
-            type="number"
-            value={teamTrophies}
-            onChange={(e) => setTeamTrophies(e.target.value)}
-            placeholder="Team Trophies"
-          />
-          <input
-            id="individualTrophies"
-            name="individualTrophies"
-            type="number"
-            value={individualTrophies}
-            onChange={(e) => setIndividualTrophies(e.target.value)}
-            placeholder="Individual Trophies"
-          />
+          <Form.Item label="Goals" name="goals">
+            <Input type="number" placeholder="Goals" />
+          </Form.Item>
+          <Form.Item label="Assists" name="assists">
+            <Input type="number" placeholder="Assists" />
+          </Form.Item>
+          <Form.Item label="Team Trophies" name="teamTrophies">
+            <Input type="number" placeholder="Team Trophies" />
+          </Form.Item>
+          <Form.Item label="Individual Trophies" name="individualTrophies">
+            <Input type="number" placeholder="Individual Trophies" />
+          </Form.Item>
         </>
       )}
       {sport === 'basketball' && (
         <>
-          <input
-            id="points"
-            name="points"
-            type="number"
-            value={points}
-            onChange={(e) => setPoints(e.target.value)}
-            placeholder="Points"
-          />
-          <input
-            id="rebounds"
-            name="rebounds"
-            type="number"
-            value={rebounds}
-            onChange={(e) => setRebounds(e.target.value)}
-            placeholder="Rebounds"
-          />
-          <input
-            id="assists"
-            name="assists"
-            type="number"
-            value={assistsBasketball}
-            onChange={(e) => setAssistsBasketball(e.target.value)}
-            placeholder="Assists"
-          />
-          <input
-            id="efficiency"
-            name="efficiency"
-            type="number"
-            step="0.01"
-            value={efficiency}
-            onChange={(e) => setEfficiency(e.target.value)}
-            placeholder="Efficiency"
-          />
-          <input
-            id="turnovers"
-            name="turnovers"
-            type="number"
-            value={turnovers}
-            onChange={(e) => setTurnovers(e.target.value)}
-            placeholder="Turnovers"
-          />
+          <Form.Item label="Points" name="points">
+            <Input type="number" placeholder="Points" />
+          </Form.Item>
+          <Form.Item label="Rebounds" name="rebounds">
+            <Input type="number" placeholder="Rebounds" />
+          </Form.Item>
+          <Form.Item label="Assists" name="assistsBasketball">
+            <Input type="number" placeholder="Assists" />
+          </Form.Item>
+          <Form.Item label="Efficiency" name="efficiency">
+            <Input type="number" step="0.01" placeholder="Efficiency" />
+          </Form.Item>
+          <Form.Item label="Turnovers" name="turnovers">
+            <Input type="number" placeholder="Turnovers" />
+          </Form.Item>
         </>
       )}
-      <button type="submit">Add Stats</button>
-    </form>
+      <Form.Item>
+        <Button type="primary" htmlType="submit" block>
+          Add Stats
+        </Button>
+      </Form.Item>
+    </Form>
   );
 };
 

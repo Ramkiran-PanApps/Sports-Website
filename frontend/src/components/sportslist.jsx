@@ -1,4 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { Select } from 'antd';
+import 'antd'; //
+
+const { Option } = Select;
 
 function SportsList({ onSportSelect }) {
   const [sports, setSports] = useState([]);
@@ -10,16 +14,23 @@ function SportsList({ onSportSelect }) {
       .catch((error) => console.error('Error:', error));
   }, []);
 
+  const handleSportChange = (value) => {
+    onSportSelect(value);
+  };
+
   return (
-    <div>
-      <h2>Select a Sport</h2>
-      <ul>
+    <div className="side-menu">
+      <Select
+        placeholder="Select a Sport"
+        style={{ width: 200 }}
+        onChange={handleSportChange}
+      >
         {sports.map((sport) => (
-          <li key={sport.id} onClick={() => onSportSelect(sport.id)}>
+          <Option key={sport.id} value={sport.id}>
             {sport.name}
-          </li>
+          </Option>
         ))}
-      </ul>
+      </Select>
     </div>
   );
 }
