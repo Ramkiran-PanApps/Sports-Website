@@ -1,0 +1,282 @@
+.App {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  background-color: #f0f2f5;
+  align-items: center;
+}
+
+h1 {
+  color: #1890ff;
+  margin-bottom: 20px;
+}
+
+h2 {
+  color: #333;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* Layout */
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* Side Menu */
+.side-menu {
+  background-color: #fff;
+  padding: 20px;
+  width: 250px;
+  border-right: 1px solid #ddd;
+}
+
+/* Adjust dropdown and player list positions */
+.sports-list select {
+  display: block;
+  width: 100%;
+  margin-bottom: 20px;
+  padding: 10px;
+  font-size: 16px;
+}
+
+/* Compact Player List */
+.player-list {
+  margin-top: 20px;
+  width: 50%;
+  margin: 0 auto;
+  position: relative;
+}
+
+.player-list.compact {
+  max-width: 600px;
+}
+
+.players-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  padding: 15px;
+}
+
+.player-list ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.player-list li {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  transition: background-color 0.3s;
+  position: relative;
+}
+
+.player-list li:hover {
+  background-color: #e6f7ff;
+}
+
+.player-list button {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+}
+
+/* PlayerStats Container */
+.player-stats {
+  background: #fff;
+  padding: 20px;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  margin-top: 20px;
+  max-width: 1000px;
+  width: 90%;
+  margin: 20px auto;
+  font-family: Arial, sans-serif;
+}
+
+.player-stats h2 {
+  color: #1890ff;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* Yearly Stats List Styling */
+.ant-card {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  background-color: #f9f9f9;
+}
+
+.ant-list-item {
+  padding: 10px 20px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.ant-list-item:last-child {
+  border-bottom: none;
+}
+
+.ant-list-item:hover {
+  background-color: #fafafa;
+}
+
+.ant-list ul {
+  margin: 0;
+  padding: 0;
+}
+
+.ant-list ul li {
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.ant-list ul li strong {
+  color: #1890ff;
+}
+
+.ant-card-body {
+  padding: 16px 24px;
+}
+
+/* Delete Button Styling */
+.ant-btn-danger {
+  background-color: #ff4d4f;
+  border: none;
+  color: white;
+  font-weight: bold;
+  padding: 8px 16px;
+}
+
+.ant-btn-danger:hover {
+  background-color: #ff7875;
+}
+
+/* Input Field Styling */
+.ant-input {
+  font-size: 16px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+/* Yearly Stats Card Title */
+.ant-card-head-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+}
+
+/* Row and Column Styling */
+.player-stats .ant-row {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.player-stats .ant-col {
+  margin-bottom: 20px;
+}
+
+.player-stats .ant-col:nth-child(1) {
+  /* Keep overall stats on the left side */
+  flex: 1;
+  min-width: 300px; /* Set a minimum width */
+}
+
+.player-stats .ant-col:nth-child(2) {
+  /* Yearly stats on the right side */
+  flex: 1;
+  min-width: 300px;
+}
+
+/* Input Field */
+.ant-input {
+  font-size: 16px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+/* Buttons */
+button {
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button.primary {
+  background-color: #1890ff;
+  color: #fff;
+}
+
+button.primary:hover {
+  background-color: #40a9ff;
+}
+
+button.danger {
+  background-color: #ff4d4f;
+  color: #fff;
+}
+
+button.danger:hover {
+  background-color: #ff7875;
+}
+
+/* Pop-Up Form Styles */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000; /* Make sure it's above other content */
+}
+
+.popup-form {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1001; /* Ensure it's above the overlay */
+  width: 90%;
+  max-width: 500px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.popup-form input,
+.popup-form textarea,
+.popup-form select {
+  margin-bottom: 10px;
+}
+
+.popup-form button {
+  align-self: flex-end;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .player-stats .ant-col {
+    flex-basis: 100%;
+    min-width: 100%;
+  }
+
+  .player-stats {
+    width: 95%;
+  }
+
+  .side-menu {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #ddd;
+  }
+
+  .container {
+    flex-direction: column;
+  }
+}
