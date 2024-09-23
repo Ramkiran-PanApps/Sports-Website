@@ -1,0 +1,272 @@
+/* General App Styles */
+.App {
+  font-family: 'Arial', sans-serif;
+  font-weight: bold;
+  padding: 25px;
+  background-color: #f7f9fc; /* Light background */
+  color: #333;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.App h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 2.5rem;
+  font-weight: bolder;
+  color: #ff0000e4; /* Darker color for the heading */
+}
+
+.ant-btn {
+  margin: 10px;
+}
+
+.topper {
+  font-style: italic;
+  font-weight: bold;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+/* SportsList Styles */
+.side-menu {
+  margin: 20px;
+  padding: 15px;
+  background-color: #ffffff; /* White background */
+  border: 1px solid #ddd; /* Light border for a clean look */
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.side-menu .ant-select {
+  width: 100%;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+}
+
+.side-menu .ant-select-selector {
+  border-radius: 5px;
+  padding: 5px;
+  background-color: #fafafa;
+}
+
+/* PlayerList Styles */
+.player-list {
+  margin: 20px;
+}
+
+.player-list h2 {
+  margin-bottom: 15px;
+  font-size: 2rem;
+  color: #34495e; /* Darker color for titles */
+  font-weight: bolder;
+}
+
+.players-card {
+  background-color: #ffffff; /* White background */
+  border: 1px solid #ddd; /* Light border */
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.player-list .ant-list-item {
+  cursor: pointer;
+  background-color: #f9f9f9; /* Light background for items */
+  border-bottom: 1px solid #eee; /* Divider for items */
+}
+
+.player-list .ant-list-item:hover {
+  background-color: #e0e0e0; /* Slightly darker on hover */
+}
+
+/* Highlight selected player */
+.player-list .selected-player {
+  background-color: #f5a623; /* Different background for selected player */
+  color: white; /* White text for better contrast */
+}
+
+.player-list .selected-player:hover {
+  background-color: hsla(37, 91%, 55%, 0.9); /* Different background for selected player */
+  color: white; /* White text for better contrast */
+}
+
+/* Highlight the player whose stats are shown */
+.player-list .stats-shown {
+  background-color: #4caf50; /* Green background for player with shown stats */
+  color: white; /* White text for contrast */
+}
+
+.player-list .ant-btn {
+  background-color: #e74c3c; /* Red background for buttons */
+  color: #fff;
+  border: none;
+}
+
+.player-list .ant-btn:hover {
+  background-color: #c0392b; /* Darker red on hover */
+}
+
+/* PlayerStats Styles */
+.player-stats {
+  margin: 20px;
+}
+
+.player-stats h2 {
+  margin-bottom: 20px;
+  font-size: 2rem;
+  color: #2980b9; /* Blue color for headings */
+  font-weight: bolder;
+}
+
+.player-stats .ant-card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.player-stats .ant-card-body {
+  padding: 20px;
+  background-color: #ffffff; /* White background for cards */
+}
+
+.player-stats .ant-list {
+  margin-top: 20px;
+}
+
+.player-stats .ant-btn {
+  background-color: #3498db; /* Blue background for buttons */
+  color: #fff;
+  border: none;
+}
+
+.player-stats .ant-btn:hover {
+  background-color: #2980b9; /* Darker blue on hover */
+}
+
+/* Form Styles */
+.ant-form {
+  max-width: 600px;
+  margin: auto;
+  background-color: #ffffff; /* White background for forms */
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.ant-form-item {
+  margin-bottom: 20px;
+}
+
+.ant-form-item-label {
+  font-size: 1rem;
+  font-weight: bolder;
+  color: #2c3e50; /* Dark color for labels */
+}
+
+.ant-form-item-control-input {
+  width: 100%;
+}
+
+.ant-form-item-control-input input,
+.ant-form-item-control-input textarea {
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  padding: 10px;
+}
+
+/* Transition for forms */
+.form-transition {
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.form-transition-enter {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Modal Styles */
+.ant-modal {
+  top: 40px;
+}
+
+.ant-modal-title {
+  font-size: 1.5rem;
+  color: #2980b9; /* Blue color for modal titles */
+}
+
+.ant-modal-footer {
+  display: flex;
+  justify-content: center;
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+  .App {
+    padding: 15px;
+  }
+
+  .App h1 {
+    font-size: 2rem;
+  }
+
+  .ant-form {
+    max-width: 100%; /* Full width on smaller screens */
+    padding: 15px;
+  }
+
+  .ant-form-item {
+    margin-bottom: 15px;
+  }
+
+  .ant-form-item-label {
+    font-size: 0.9rem; /* Smaller label font size */
+  }
+
+  .ant-form-item-control-input input,
+  .ant-form-item-control-input textarea {
+    padding: 8px; /* Adjust padding */
+  }
+
+  .player-list h2,
+  .player-stats h2 {
+    font-size: 1.5rem; /* Smaller heading font size */
+  }
+
+  .player-list .players-card {
+    margin: 10px 0; /* Adjust card margins */
+  }
+
+  .player-list .ant-btn,
+  .player-stats .ant-btn {
+    width: 100%; /* Full width buttons */
+  }
+}
+
+/* Additional styles for very small screens */
+@media (max-width: 480px) {
+  .App {
+    padding: 10px;
+  }
+
+  .App h1 {
+    font-size: 1.8rem; /* Even smaller heading font size */
+  }
+
+  .ant-form {
+    padding: 10px;
+  }
+
+  .ant-form-item {
+    margin-bottom: 10px;
+  }
+
+  .player-list h2,
+  .player-stats h2 {
+    font-size: 1.25rem; /* Smaller heading font size */
+  }
+
+  .ant-btn {
+    padding: 10px 5px; /* Adjust button padding */
+  }
+}
