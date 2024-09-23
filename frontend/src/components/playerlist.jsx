@@ -5,7 +5,7 @@ import 'antd';
 
 const { Text } = Typography;
 
-function PlayersList({ players, onPlayerSelect, sport, onDelete }) {
+function PlayersList({ players, onPlayerSelect, sport, onDelete, selectedPlayer }) {
   const handleDelete = async (playerId) => {
     try {
       await axios.delete(`http://localhost:5000/players/${playerId}`);
@@ -18,39 +18,44 @@ function PlayersList({ players, onPlayerSelect, sport, onDelete }) {
   };
 
   return (
-    
     <div className="player-list compact">
       <h2>Select a Player</h2>
       <Card className="players-card">
         <List
           bordered
           dataSource={players}
-          renderItem={(player) => (
-            <List.Item
-              actions={[
-                <Button
-                  type="primary"
-                  danger
-                  onClick={() => handleDelete(player.id)}
-                  size="small"
-                >
-                  Delete
-                </Button>,
-              ]}
-            >
-              <Text
-                onClick={() => onPlayerSelect(player)}
-                style={{ cursor: 'pointer', fontSize: 16 }}
+          renderItem={(player) => {
+            // Conditionally apply styles based on whether the player is selected
+            const isSelected = selectedPlayer && selectedPlayer.id === player.id;
+            const itemClass = isSelected ? 'selected-player' : '';
+
+            return (
+              <List.Item
+                className={itemClass}  // Add a class for selected players
+                actions={[
+                  <Button
+                    type="primary"
+                    danger
+                    onClick={() => handleDelete(player.id)}
+                    size="small"
+                  >
+                    Delete
+                  </Button>,
+                ]}
               >
-                {player.name} - {player.country} - {player.age} -{' '}
-                {player.active ? 'Active' : 'Inactive'} - {sport === 'cricket' ? `${player.total} runs` : sport === 'football' ? `${player.total} goals` : `${player.total} matches`}
-              </Text>
-            </List.Item>
-          )}
+                <Text
+                  onClick={() => onPlayerSelect(player)}
+                  style={{ cursor: 'pointer', fontSize: 16 }}
+                >
+                  {player.name} &nbsp; ( Country : {player.country} - Age: {player.age} -{' '}
+                  Status : {player.active ? 'Active' : 'Inactive'} - {sport === 'cricket' ? `${player.total} career runs` : sport === 'football' ? `${player.total} career goals` : `${player.total} career matches`} )
+                </Text>
+              </List.Item>
+            );
+          }}
         />
       </Card>
     </div>
-    
   );
 }
 

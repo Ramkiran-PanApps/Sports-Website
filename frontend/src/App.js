@@ -6,8 +6,9 @@ import PlayerStats from './components/playerstats';
 import AddPlayerForm from './components/addplayerform';
 import AddStats from './components/AddStats';
 import UpdateStats from './components/UpdateStats';
-import { Modal, Button } from 'antd'; // Import Modal and Button from Ant Design
-import 'antd/dist/reset.css'; // Include Ant Design CSS
+import { Modal, Button } from 'antd';
+import 'antd/dist/reset.css';
+import './App.css';
 
 function App() {
   const [sports, setSports] = useState([]);
@@ -39,25 +40,18 @@ function App() {
       const fetchPlayers = async () => {
         try {
           const result = await axios.get(`http://localhost:5000/players?sport_id=${selectedSport}`);
-          console.log(result);
-          //Find the largest value in the result total
           const maxPlayer = result.data.reduce((max, play) => {
             const playTotal = Number(play.total);
-            const maxTotal = Number(max.total);   
-            
+            const maxTotal = Number(max.total);
             return playTotal > maxTotal ? play : max;
-          }, {total : 0});
+          }, { total: 0 });
           setTopPlayer(maxPlayer);
           setPlayers(result.data);
-          console.log(result.data);
-          console.log('Max player:', maxPlayer);
         } catch (error) {
           console.error('Error fetching players:', error);
         }
       };
       fetchPlayers();
-
-    
     }
   }, [selectedSport, sportname]);
 
@@ -99,10 +93,10 @@ function App() {
       <SportsList sports={sports} onSportSelect={handleSportSelect} />
 
       {selectedSport && (
-        <div style={{ textAlign: 'center', margin: '20px 0' }}>
+        <div className='topper' style={{ textAlign: 'center', margin: '20px 0' }}>
           {topPlayer && (
             <p>
-           The player with the most {sportname === 'cricket' ? 'runs' : sportname === 'football' ? 'goals' : 'matches'} in {sportname} is {topPlayer.name} with {topPlayer.total} {sportname === 'cricket' ? 'runs' : sportname === 'football' ? 'goals' : 'matches'}.
+              The player with the most {sportname === 'cricket' ? 'runs' : sportname === 'football' ? 'goals' : 'matches'} in {sportname} is {topPlayer.name} with {topPlayer.total} {sportname === 'cricket' ? 'runs' : sportname === 'football' ? 'goals' : 'matches'}.
             </p>
           )}
         </div>
@@ -110,7 +104,13 @@ function App() {
 
       {selectedSport && (
         <>
-          <PlayerList players={players} onPlayerSelect={handlePlayerSelect} sport={sportname} />
+          <PlayerList 
+          players={players} 
+          onPlayerSelect={handlePlayerSelect} 
+          sport={sportname} 
+          selectedPlayer={selectedPlayer} // Highlight selected player
+        />
+
           <Button type="primary" onClick={() => { closeAllModals(); setShowAddPlayerForm(true); }}>
             Add New Player
           </Button>
@@ -132,16 +132,34 @@ function App() {
         </>
       )}
 
-      {/* Modals */}
-      <Modal title="Add New Player" visible={showAddPlayerForm} onCancel={closeAllModals} footer={null}>
+      {/* Modals with Transition Effects */}
+      <Modal
+        title="Add New Player"
+        visible={showAddPlayerForm}
+        onCancel={closeAllModals}
+        footer={null}
+        className={showAddPlayerForm ? "show" : ""}
+      >
         {showAddPlayerForm && <AddPlayerForm selectedSport={selectedSport} />}
       </Modal>
 
-      <Modal title="Add Stats" visible={showAddStats} onCancel={closeAllModals} footer={null}>
+      <Modal
+        title="Add Stats"
+        visible={showAddStats}
+        onCancel={closeAllModals}
+        footer={null}
+        className={showAddStats ? "show" : ""}
+      >
         {showAddStats && <AddStats player={selectedPlayer} sport={sportname} />}
       </Modal>
 
-      <Modal title="Update Stats" visible={showUpdateStats} onCancel={closeAllModals} footer={null}>
+      <Modal
+        title="Update Stats"
+        visible={showUpdateStats}
+        onCancel={closeAllModals}
+        footer={null}
+        className={showUpdateStats ? "show" : ""}
+      >
         {showUpdateStats && <UpdateStats player={selectedPlayer} sport={sportname} />}
       </Modal>
     </div>
