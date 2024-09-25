@@ -26,6 +26,15 @@ app.get('/sports', async (req, res) => {
   }
 });
 
+app.get('/playertable', async (req,res) => {
+  try{
+    const all = await pool.query('SELECT * FROM players')
+    res.json(all.rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // To show all players from Table
 app.get('/players', async (req, res) => {
   const { sport_id } = req.query;
@@ -190,12 +199,12 @@ app.get('/cricket/stats/:player_id', async (req, res) => {
         player_id,
         SUM(matches) AS total_matches,
         SUM(runs) AS total_runs,
-        AVG(batting_average) AS Batting_average,
-        AVG(strike_rate) AS Strike_rate,
+        ROUND(AVG(batting_average),3) AS Batting_average,
+        ROUND(AVG(strike_rate),3) AS Strike_rate,
         SUM(centuries) AS Centuries,
         SUM(fifties) AS Fifties,
-        AVG(bowling_average) AS Bowling_average,
-        AVG(economy) AS Economy,
+        ROUND(AVG(bowling_average),3) AS Bowling_average,
+        ROUND(AVG(economy),3) AS Economy,
         SUM(five_wickets) AS Five_wickets,
         MAX(best_bowling) AS best_bowling
       FROM cricket_stats
@@ -265,11 +274,11 @@ app.get('/basketball/stats/:player_id', async (req, res) => {
       SELECT 
         player_id,
         SUM(matches) AS total_matches,
-        AVG(points) AS Points,
-        AVG(rebounds) AS Rebounds,
-        AVG(assists) AS Assists,
-        AVG(efficiency) AS Efficiency,
-        AVG(turnovers) AS Turnovers
+        ROUND(AVG(points),3) AS Points,
+        ROUND(AVG(rebounds),3) AS Rebounds,
+        ROUND(AVG(assists),3) AS Assists,
+        ROUND(AVG(efficiency),3) AS Efficiency,
+        ROUND(AVG(turnovers),3) AS Turnovers
       FROM basketball_stats
       WHERE player_id = $1
       GROUP BY player_id;
