@@ -1,5 +1,5 @@
-/* General App Styles */
-.App {
+/* General Sport Styles */
+.sports {
   font-family: 'Arial', sans-serif;
   font-weight: bold;
   padding: 25px;
@@ -9,7 +9,7 @@
   margin: auto;
 }
 
-.App h1 {
+.sports h1 {
   text-align: center;
   margin-bottom: 20px;
   font-size: 2.5rem;
@@ -202,11 +202,11 @@
 
 /* Media Queries */
 @media (max-width: 768px) {
-  .App {
+  .sports {
     padding: 15px;
   }
 
-  .App h1 {
+  .sports h1 {
     font-size: 2rem;
   }
 
@@ -245,11 +245,11 @@
 
 /* Additional styles for very small screens */
 @media (max-width: 480px) {
-  .App {
+  .sports {
     padding: 10px;
   }
 
-  .App h1 {
+  .sports h1 {
     font-size: 1.8rem; /* Even smaller heading font size */
   }
 

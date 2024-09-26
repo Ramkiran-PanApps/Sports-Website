@@ -86,7 +86,7 @@ function Sports() {
   
     return (
       <div className="sports">
-      <h2>Select players</h2>
+      <h2>Select a Sport</h2>
 
       <SportsList sports={sports} onSportSelect={handleSportSelect} />
 
