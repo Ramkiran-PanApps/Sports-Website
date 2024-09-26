@@ -26,7 +26,7 @@ app.get('/sports', async (req, res) => {
   }
 });
 
-app.get('/playertable', async (req,res) => {
+app.get('/playerlist', async (req,res) => {
   try{
     const all = await pool.query('SELECT * FROM players')
     res.json(all.rows);
@@ -42,52 +42,63 @@ app.get('/players', async (req, res) => {
   try {
     let query = 'SELECT * FROM players ORDER BY id';
     let query_agg;
-    let player_aggs;
+    let player_aggs = { rows: [] }; // Initialize with an empty array
     const values = [];
 
     if (sport_id) {
       query = 'SELECT * FROM players WHERE sport_id = $1 ORDER BY id';
       values.push(sport_id);
+
+      if (sport_id == 1) {
+        query_agg = `
+          SELECT player_id, SUM(runs) AS total
+          FROM cricket_stats 
+          GROUP BY player_id
+        `;
+      } else if (sport_id == 2) {
+        query_agg = `
+          SELECT player_id, SUM(goals) AS total
+          FROM football_stats 
+          GROUP BY player_id
+        `;
+      } else if (sport_id == 3) {
+        query_agg = `
+          SELECT player_id, SUM(matches) AS total
+          FROM basketball_stats 
+          GROUP BY player_id
+        `;
+      }
+
+      // Fetch aggregated stats only if a sport_id is provided
+      if (query_agg) {
+        player_aggs = await pool.query(query_agg);
+      }
     }
 
+    // Fetch players
     const players = await pool.query(query, values);
-    if(sport_id == 1){
-        query_agg = `
-            SELECT player_id , SUM(runs) AS total
-            FROM cricket_stats 
-            GROUP BY player_id
-            `;
-    }else if(sport_id == 2){
-        query_agg = `
-            SELECT player_id , SUM(goals) AS total
-            FROM football_stats 
-            GROUP BY player_id
-              `;
-    }else if(sport_id == 3){
-        query_agg = `
-              SELECT player_id , SUM(matches) AS total
-              FROM basketball_stats 
-              GROUP BY player_id
-              `;
-    }
-    if(query_agg == null){
-      res.status(500).json({ error: 'No Sports Selected'});
-      return;
-    }
-    player_aggs = await pool.query(query_agg);
+
+    // Map player data and include the total aggregated stats (if available)
     const playerData = players.rows.map(player => {
       const agg = player_aggs.rows.find(a => a.player_id === player.id);
       return {
         ...player,
-        total: agg ? agg.total : 0
+        total: agg ? agg.total : 0 
       };
     });
-    
-    res.json(playerData);
+
+    // If no sport_id is provided, return player list
+    if (!sport_id) {
+      res.json(players.rows);
+    } else {
+      res.json(playerData);
+    }
+
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
+
 
 // Fetch the Topper of each sport
 app.get('/topper/:sport', async (req, res) => {
