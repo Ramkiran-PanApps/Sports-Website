@@ -69,7 +69,6 @@ app.get('/players', async (req, res) => {
         `;
       }
 
-      // Fetch aggregated stats only if a sport_id is provided
       if (query_agg) {
         player_aggs = await pool.query(query_agg);
       }
@@ -78,7 +77,6 @@ app.get('/players', async (req, res) => {
     // Fetch players
     const players = await pool.query(query, values);
 
-    // Map player data and include the total aggregated stats (if available)
     const playerData = players.rows.map(player => {
       const agg = player_aggs.rows.find(a => a.player_id === player.id);
       return {
@@ -87,7 +85,7 @@ app.get('/players', async (req, res) => {
       };
     });
 
-    // If no sport_id is provided, return player list
+    // If no sport Id is provided, return player list
     if (!sport_id) {
       res.json(players.rows);
     } else {
