@@ -6,7 +6,7 @@ import PlayerStats from './playerstats';
 import AddPlayerForm from './addplayerform';
 import AddStats from './AddStats';
 import UpdateStats from './UpdateStats';
-import { Modal, Button } from 'antd';
+import { Modal, Button, Typography } from 'antd';
 
 function Sports() {
     const [sports, setSports] = useState([]);
@@ -20,6 +20,7 @@ function Sports() {
     const [sportname, setSportname] = useState('');
     const [topPlayer, setTopPlayer] = useState(null);
   
+    const { Title } = Typography;
     useEffect(() => {
       const fetchSports = async () => {
         try {
@@ -86,7 +87,10 @@ function Sports() {
   
     return (
       <div className="sports">
-      <h2>Select a Sport</h2>
+      <Title level={2} style={{ fontSize: '36px', color: '#1890ff', fontWeight: 'bold', textAlign: 'center', marginBottom: '20px' }}>
+        Select Sport
+      </Title>
+
 
       <SportsList sports={sports} onSportSelect={handleSportSelect} />
 

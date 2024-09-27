@@ -38,23 +38,23 @@ function Home() {
   return (
     <div style={{ padding: '50px', backgroundColor: '#f0f2f5', minHeight: '100vh' }}>
       <Space direction="vertical" size="large" style={{ width: '100%', textAlign: 'center' }}>
-        <Title 
-          level={1} 
-          style={{ 
-            fontSize: '48px', 
-            color: '#1890ff', 
-            fontFamily: 'Arial, sans-serif',
-            
-          }}
-        >
-          Sports Addicts - The Home of Sports
-        </Title>
+      <Title 
+        level={1} 
+        style={{ 
+          fontSize: '48px', 
+          color: '#1890ff', 
+          fontFamily: 'Roboto, Helvetica Neue, Arial, sans-serif',
+          borderBottom: '3px solid #1890ff', // Adds a beautiful underline
+          display: 'inline-block', // Ensures the underline matches the text width
+          paddingBottom: '10px', // Adds some space between the text and the underline
+        }}
+      >
+        Sports Website - A Place For Sports Fans
+      </Title>
         <Paragraph style={{ fontSize: '18px', maxWidth: '800px', margin: '0 auto' }}>
           Explore the world of sports through the eyes of legends. Here, we celebrate not just the statistics, but the stories, dedication, and passion that define greatness.
         </Paragraph>
-        <Title level={3} style={{ marginBottom: '40px' }}>
-          Select Sports or Players from the top menu for more
-        </Title>
+        
 
         <Row gutter={[16, 16]} justify="center">
           {quotes.map((item, index) => (

@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Table, Button, Modal, Form, Input, Select, Switch } from 'antd';
+import { Table, Button, Modal, Form, Input, Select, Switch, Typography } from 'antd';
 
 function Players() {
   const [players, setPlayers] = useState([]);
   const [editingPlayer, setEditingPlayer] = useState(null); // To track which player is being edited
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [form] = Form.useForm(); // Ant Design Form
+
+  const { Title } = Typography;
 
   const sportMap = {
     1: 'Cricket',
@@ -101,7 +103,9 @@ function Players() {
 
   return (
     <div className="Players">
-      <h2>Player Database</h2>
+      <Title level={2} style={{ fontSize: '36px', color: '#1890ff', fontWeight: 'bold', textAlign: 'center', marginBottom: '20px' }}>
+        Player Database
+      </Title>
 
       {players.length > 0 ? (
         <Table dataSource={players} columns={columns} rowKey="id" />
